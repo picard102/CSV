@@ -1,132 +1,269 @@
 <?php
 echo "Welcome";
-
-set_time_limit(100000);
-
-
+set_time_limit( 100000 );
 // MultiDimensional Array Search
 // This will search out matching email fields in our lists.
-//
-
-function array_search2d($needle, $haystack) {
-  for ($i = 0, $l = count($haystack); $i < $l; ++$i) {
-      if (in_array($needle, $haystack[$i])) return $i;
+function array_search2d ( $needle, $haystack ) {
+  for ( $i = 0, $l = count( $haystack ); $i < $l; ++$i ) {
+    if ( in_array( $needle, $haystack[ $i ] ) ) return $i;
   }
   return false;
 }
 
 
 // Set current year to process.
-//
-$currentYear = '2017';
-$currentFile = 'Registrations/'.$currentYear.'.csv';
-
-$input = new SplFileObject($currentFile);
-$input->setFlags(SplFileObject::READ_CSV);
-
-foreach ($input as $row) {
-    $csv_1[] = $row;
-    // echo "<hr>";
-    // var_dump($row);
+$orders_file = new SplFileObject( 'source/orders.csv' );
+$orders_file->setFlags( SplFileObject::READ_CSV );
+foreach ( $orders_file as $row ) {
+  $orders[] = $row;
+  // echo '<hr>';
+  // var_dump( $row );
 }
 
-// All Years
-//
+$master_file = new SplFileObject( 'source/master.csv' );
+$master_file->setFlags( SplFileObject::READ_CSV );
 
-$master = new SplFileObject("Registrations/Master.csv");
-$master->setFlags(SplFileObject::READ_CSV);
-
-foreach ($master as $row) {
-    $master_row[] = $row;
+foreach ( $master_file as $row ) {
+    $master[] = $row;
+    // echo '<hr>';
+    // var_dump( $row );
 }
 
-// All years into single array to itterate through
-//
-$years = array( $master_row );
-
-// Set index to count where in the array the match is
-//
+// Set index to count where in the array the match is.
 $index = 0;
 
-// Loop through input csv
-//
-foreach($csv_1 as $unique_row) {
+$order_email_pos = array_search( strtolower('email'), array_map( 'strtolower', $orders[0]) );
 
-  // Set term to search for (Email)
-  //
-  $searchTerm = $unique_row[0];
+$order_fname_pos = array_search( strtolower('First Name'), array_map( 'strtolower', $orders[0]) );
+$order_lname_pos = array_search( strtolower('Last Name'), array_map( 'strtolower', $orders[0]) );
+$order_city_pos = array_search( strtolower('billing city'), array_map( 'strtolower', $orders[0]) );
+$order_company_pos = array_search( strtolower('company'), array_map( 'strtolower', $orders[0]) );
+$order_job_pos = array_search( strtolower('job title'), array_map( 'strtolower', $orders[0]) );
+$order_rss_pos = array_search( strtolower('Podcast Feed'), array_map( 'strtolower', $orders[0]) );
+$order_website_pos = array_search( strtolower('Website'), array_map( 'strtolower', $orders[0]) );
+$order_street_pos = array_search( strtolower('Billing Address 1'), array_map( 'strtolower', $orders[0]) );
+$order_street2_pos = array_search( strtolower('Billing Address 2'), array_map( 'strtolower', $orders[0]) );
+$order_state_pos = array_search( strtolower('billing state'), array_map( 'strtolower', $orders[0]) );
+$order_country_pos = array_search( strtolower('billing country'), array_map( 'strtolower', $orders[0]) );
+$order_zip_pos = array_search( strtolower('billing zip'), array_map( 'strtolower', $orders[0]) );
+$order_age_pos = array_search( strtolower('age'), array_map( 'strtolower', $orders[0]) );
+$order_gender_pos = array_search( strtolower('gender'), array_map( 'strtolower', $orders[0]) );
+$order_time_pos = array_search( strtolower('Order Date'), array_map( 'strtolower', $orders[0]) );
 
-  // Loop through Year array
-  //
-  foreach($years as $yearC) {
 
-    // Set the year we're looping through
-    $csv_2 = $yearC;
+$master_twitter_pos = array_search( strtolower('twitter id'), array_map( 'strtolower', $master[0]) );
+$master_city_pos = array_search( strtolower('city'), array_map( 'strtolower', $master[0]) );
+$master_company_pos = array_search( strtolower('company name'), array_map( 'strtolower', $master[0]) );
+$master_job_pos = array_search( strtolower('Job Title'), array_map( 'strtolower', $master[0]) );
+$master_rss_pos = array_search( strtolower('Podcast Rss Feed'), array_map( 'strtolower', $master[0]) );
+$master_website_pos = array_search( strtolower('website'), array_map( 'strtolower', $master[0]) );
+$master_street_pos = array_search( strtolower('street'), array_map( 'strtolower', $master[0]) );
+$master_state_pos = array_search( strtolower('state'), array_map( 'strtolower', $master[0]) );
+$master_zip_pos = array_search( strtolower('billing zip'), array_map( 'strtolower', $master[0]) );
+$master_country_pos = array_search( strtolower('country'), array_map( 'strtolower', $master[0]) );
+$master_gender_pos = array_search( strtolower('gender'), array_map( 'strtolower', $master[0]) );
+$master_age_pos = array_search( strtolower('age'), array_map( 'strtolower', $master[0]) );
+$master_year_pos = array_search( strtolower('year'), array_map( 'strtolower', $master[0]) );
+$master_time_pos = array_search( strtolower('OptIN_Time'), array_map( 'strtolower', $master[0]) );
 
-    // Find Email address in the current year that matches the email in our input.
-    $pos = array_search2d($searchTerm, $csv_2);
 
-    if (false !== $pos) {
-        // If Twitter isn't empty, replace value
-        if ( !empty($csv_2[$pos][3]) ) {
-          // Remove @ symbol
-          $csv_1[$index][3] = str_replace('@', '', $csv_2[$pos][3]);
+
+$headers = array(
+  'Email',
+  'First Name',
+  'Last Name',
+  'Gender',
+  'Age',
+  'Podcast RSS Feed',
+  'Street',
+  'City',
+  'State',
+  'Zip',
+  'Country',
+  'Website',
+  'Company Name',
+  'Job Title',
+  'Twitter ID',
+  'Year',
+  'Opt-In Time',
+);
+
+
+$merged = array();
+array_push( $merged, $headers );
+
+  // Loop through Orders csv.
+  foreach ( $orders as $orders_row ) {
+    $row = array();
+    // Set term to search for (Email).
+    if ( ! empty( $orders_row[0] ) ) {
+    $customer = $orders_row[ $order_email_pos  ];
+    $exists = array_search2d( $customer, $merged );
+    if ( false === $exists) {
+      $pos = array_search2d( $customer, $master );
+        array_push( $row, $customer );
+      $fname = $orders_row[ $order_fname_pos  ];
+        array_push( $row, $fname );
+      $lname = $orders_row[ $order_lname_pos  ];
+        array_push( $row, $lname );
+      $gender = $orders_row[ $order_gender_pos  ];
+      if ( empty( $gender ) ) {
+        if ( $pos && $master_gender_pos ) {
+          $gender = isset( $master[ $pos ][ $master_gender_pos ] ) ? $master[ $pos ][ $master_gender_pos ] : '';
+        } else {
+          $gender = '';
         }
-        //City
-        if (  !empty($csv_2[$pos][4]) ) {
-          $csv_1[$index][4] = $csv_2[$pos][4];
+      }
+      array_push( $row, $gender );
+
+      $age = $orders_row[ $order_age_pos  ];
+      if ( empty( $age ) ) {
+        if ( $pos && $master_age_pos ) {
+          $age = isset( $master[ $pos ][ $master_age_pos ] ) ? $master[ $pos ][ $master_age_pos ] : '';
+        } else {
+          $age = '';
         }
-        //Company
-        if (  !empty($csv_2[$pos][5]) ) {
-          $csv_1[$index][5] = $csv_2[$pos][5];
+      }
+      array_push( $row, $age );
+
+      $rss = $orders_row[ $order_rss_pos  ];
+      if ( empty( $rss ) ) {
+        if ( $pos && $master_rss_pos ) {
+          $rss = isset( $master[ $pos ][ $master_rss_pos ] ) ? $master[ $pos ][ $master_rss_pos ] : '';
+        } else {
+          $rss = '';
         }
-        //Podcast
-        if (  !empty($csv_2[$pos][6]) ) {
-          $csv_1[$index][6] = $csv_2[$pos][6];
+      }
+      array_push( $row, $rss );
+
+      $street = $orders_row[ $order_street_pos ] . ' ' . $orders_row[ $order_street2_pos ];
+      if ( empty( $street ) ) {
+        if ( $pos && $master_street_pos ) {
+          $street = isset( $master[ $pos ][ $master_street_pos ] ) ? $master[ $pos ][ $master_street_pos ] : '';
+        } else {
+          $street = '';
         }
-        //Website
-        if (  !empty($csv_2[$pos][7]) ) {
-          $csv_1[$index][7] = $csv_2[$pos][7];
+      }
+      array_push( $row, $street );
+
+      $city = $orders_row[ $order_city_pos  ];
+      if ( empty( $city ) ) {
+        if ( $pos && $master_city_pos ) {
+          $city = isset( $master[ $pos ][ $master_city_pos ] ) ? $master[ $pos ][ $master_city_pos ] : '';
+        } else {
+          $city = '';
         }
-        //Street
-        if (  !empty($csv_2[$pos][8]) ) {
-          $csv_1[$index][8] = $csv_2[$pos][8];
+      }
+      array_push( $row, $city );
+
+      $state = $orders_row[ $order_state_pos  ];
+      if ( empty( $state ) ) {
+        if ( $pos && $master_state_pos ) {
+          $state = isset( $master[ $pos ][ $master_state_pos ] ) ? $master[ $pos ][ $master_state_pos ] : '';
+        } else {
+          $state = '';
         }
-        //State
-        if (  !empty($csv_2[$pos][9]) ) {
-          $csv_1[$index][9] = $csv_2[$pos][9];
+      }
+      array_push( $row, $state );
+
+      $zip = $orders_row[ $order_zip_pos  ];
+      if ( empty( $zip ) ) {
+        if ( $pos && $master_zip_pos ) {
+          $zip = isset( $master[ $pos ][ $master_zip_pos ] ) ? $master[ $pos ][ $master_zip_pos ] : '';
+        } else {
+          $zip = '';
         }
-        //Country
-        if (  !empty($csv_2[$pos][10]) ) {
-          $csv_1[$index][10] = $csv_2[$pos][10];
+      }
+      array_push( $row, $zip );
+
+      $country = $orders_row[ $order_country_pos  ];
+      if ( empty( $country ) ) {
+        if ( $pos && $master_country_pos ) {
+          $country = isset( $master[ $pos ][ $master_country_pos ] ) ? $master[ $pos ][ $master_country_pos ] : '';
+        } else {
+          $country = '';
         }
-    } // End Replacement
+      }
+      array_push( $row, $country );
+
+      $website = $orders_row[ $order_website_pos  ];
+      if ( empty( $website ) ) {
+        if ( $pos && $master_website_pos ) {
+          $website = isset( $master[ $pos ][ $master_website_pos ] ) ? $master[ $pos ][ $master_website_pos ] : '';
+        } else {
+          $website = '';
+        }
+      }
+      array_push( $row, $website );
+
+      $company = $orders_row[ $order_company_pos  ];
+      if ( empty( $company ) ) {
+        if ( $pos && $master_company_pos ) {
+          $company = isset( $master[ $pos ][ $master_company_pos ] ) ? $master[ $pos ][ $master_company_pos ] : '';
+        } else {
+          $company = '';
+        }
+      }
+      array_push( $row, $company );
+
+      $job = $orders_row[ $order_job_pos  ];
+      if ( empty( $job ) ) {
+        if ( $pos && $master_job_pos ) {
+          $job = isset( $master[ $pos ][ $master_job_pos ] ) ? $master[ $pos ][ $master_job_pos ] : '';
+        } else {
+          $job = '';
+        }
+      }
+      array_push( $row, $job );
+
+      if ( $pos && $master_twitter_pos ) {
+        $twitter = isset( $master[ $pos ][ $master_twitter_pos ] ) ? $master[ $pos ][ $master_twitter_pos ] : '';
+      } else {
+        $twitter = '';
+      }
+      array_push( $row, $twitter );
+
+      if ( $pos && $master_year_pos ) {
+        $year = isset( $master[ $pos ][ $master_year_pos ] ) ? $master[ $pos ][ $master_year_pos ] . ', 2019' : '';
+      } else {
+        $year = '2019';
+      }
+      array_push( $row, $year );
+
+
+      if ( $pos && $master_time_pos ) {
+        $time = isset( $master[ $pos ][ $master_time_pos ] ) ? $master[ $pos ][ $master_time_pos ] . ', 2019' : '';
+      } else {
+        $time = isset( $orders_row[ $order_time_pos ] ) ? $orders_row[ $order_time_pos ] : '';
+      }
+      array_push( $row, $time );
+
+      array_push( $merged, $row );
+    }
   }
-  // Set index position
-  $index++;
-} // Finished looping through years
-
-// Create new file
-//
-$fp = fopen('Merged.csv', 'w');
-
-// Loop through modifyed array and create a CSV output
-foreach ($csv_1 as $fields) {
-    fputcsv($fp, $fields);
 }
-// Close file
-fclose($fp);
 
-//  Display the output of the array
+// Create new file.
+$fp = fopen('Merged.csv', 'w');
+// Loop through modifyed array and create a CSV output.
+foreach ( $merged as $fields ) {
+  fputcsv( $fp, $fields );
+}
+// Close file.
+fclose( $fp );
 
-  // echo '<hr><table>';
-  //   foreach($csv_1 as $unique_row) {
-  //     echo '<tr>';
-  //       foreach($unique_row as $element) {
-  //         echo '<td>' . $element . '</td>';
-  //       }
-  //     echo '</tr>';
-  //   }
-  // echo '</table>';
-  // echo '<br />';
+//Display the output of the array.
+
+echo '<hr><table border="1">';
+foreach ( $merged as $unique_row ) {
+  echo '<tr>';
+  foreach ( $unique_row as $element ) {
+    echo '<td>' . $element . '</td>';
+  }
+  echo '</tr>';
+}
+echo '</table>';
+echo '<br />';
+
+
 ?>

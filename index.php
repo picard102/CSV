@@ -33,20 +33,20 @@ foreach ( $master_file as $row ) {
 $index = 0;
 
 $order_email_pos = array_search( strtolower('email'), array_map( 'strtolower', $orders[0]) );
-
 $order_fname_pos = array_search( strtolower('First Name'), array_map( 'strtolower', $orders[0]) );
 $order_lname_pos = array_search( strtolower('Last Name'), array_map( 'strtolower', $orders[0]) );
 $order_city_pos = array_search( strtolower('billing city'), array_map( 'strtolower', $orders[0]) );
 $order_company_pos = array_search( strtolower('company'), array_map( 'strtolower', $orders[0]) );
 $order_job_pos = array_search( strtolower('job title'), array_map( 'strtolower', $orders[0]) );
-$order_rss_pos = array_search( strtolower('Podcast Feed'), array_map( 'strtolower', $orders[0]) );
+$order_rss_pos = array_search( strtolower('Podcast URL'), array_map( 'strtolower', $orders[0]) );
 $order_website_pos = array_search( strtolower('Website'), array_map( 'strtolower', $orders[0]) );
 $order_street_pos = array_search( strtolower('Billing Address 1'), array_map( 'strtolower', $orders[0]) );
 $order_street2_pos = array_search( strtolower('Billing Address 2'), array_map( 'strtolower', $orders[0]) );
 $order_state_pos = array_search( strtolower('billing state'), array_map( 'strtolower', $orders[0]) );
 $order_country_pos = array_search( strtolower('billing country'), array_map( 'strtolower', $orders[0]) );
-$order_zip_pos = array_search( strtolower('billing zip'), array_map( 'strtolower', $orders[0]) );
+$order_zip_pos = array_search( strtolower('Billing Postal Code'), array_map( 'strtolower', $orders[0]) );
 $order_age_pos = array_search( strtolower('age'), array_map( 'strtolower', $orders[0]) );
+$order_birthday_pos = array_search( strtolower('Birth Date'), array_map( 'strtolower', $orders[0]) );
 $order_gender_pos = array_search( strtolower('gender'), array_map( 'strtolower', $orders[0]) );
 $order_time_pos = array_search( strtolower('Order Date'), array_map( 'strtolower', $orders[0]) );
 
@@ -74,6 +74,7 @@ $headers = array(
   'Last Name',
   'Gender',
   'Age',
+  'Birthday',
   'Podcast RSS Feed',
   'Street',
   'City',
@@ -99,7 +100,7 @@ array_push( $merged, $headers );
     if ( ! empty( $orders_row[0] ) ) {
     $customer = $orders_row[ $order_email_pos  ];
     $exists = array_search2d( $customer, $merged );
-    if ( false === $exists) {
+    if ( false === $exists ) {
       $pos = array_search2d( $customer, $master );
         array_push( $row, $customer );
       $fname = $orders_row[ $order_fname_pos  ];
@@ -116,15 +117,38 @@ array_push( $merged, $headers );
       }
       array_push( $row, $gender );
 
-      $age = $orders_row[ $order_age_pos  ];
-      if ( empty( $age ) ) {
-        if ( $pos && $master_age_pos ) {
-          $age = isset( $master[ $pos ][ $master_age_pos ] ) ? $master[ $pos ][ $master_age_pos ] : '';
+
+
+
+
+      $bdayy = isset( $order_birthday_pos ) ? $orders_row[ $order_birthday_pos ] : false;
+      if ( ! empty( $bdayy ) ) {
+        $byear = substr( $bdayy, -4 );
+        $age = date( 'Y' ) - (int)$byear;
+        array_push( $row, $age );
+      } else {
+
+        $age = ( true === $order_age_pos ) ? $orders_row[ $order_age_pos ] : false;
+        if ( empty( $age ) ) {
+          if ( $pos && $master_age_pos ) {
+            $age = isset( $master[ $pos ][ $master_age_pos ] ) ? $master[ $pos ][ $master_age_pos ] : '';
+          } else {
+            $age = '';
+          }
+        }
+        array_push( $row, $age );
+
+      }
+
+      $bday = isset( $order_birthday_pos ) ? $orders_row[ $order_birthday_pos ] : false;
+      if ( empty( $bday ) ) {
+        if ( $pos && $master_birthday_pos ) {
+          $bday = isset( $master[ $pos ][ $master_birthday_pos ] ) ? $master[ $pos ][ $master_birthday_pos ] : '';
         } else {
-          $age = '';
+          $bday = '';
         }
       }
-      array_push( $row, $age );
+      array_push( $row, $bday );
 
       $rss = $orders_row[ $order_rss_pos  ];
       if ( empty( $rss ) ) {
@@ -224,15 +248,15 @@ array_push( $merged, $headers );
       array_push( $row, $twitter );
 
       if ( $pos && $master_year_pos ) {
-        $year = isset( $master[ $pos ][ $master_year_pos ] ) ? $master[ $pos ][ $master_year_pos ] . ', 2019' : '';
+        $year = isset( $master[ $pos ][ $master_year_pos ] ) ? $master[ $pos ][ $master_year_pos ] . ', 2020' : '';
       } else {
-        $year = '2019';
+        $year = '2020';
       }
       array_push( $row, $year );
 
 
       if ( $pos && $master_time_pos ) {
-        $time = isset( $master[ $pos ][ $master_time_pos ] ) ? $master[ $pos ][ $master_time_pos ] . ', 2019' : '';
+        $time = isset( $master[ $pos ][ $master_time_pos ] ) ? $master[ $pos ][ $master_time_pos ] . ', 2020' : '';
       } else {
         $time = isset( $orders_row[ $order_time_pos ] ) ? $orders_row[ $order_time_pos ] : '';
       }
